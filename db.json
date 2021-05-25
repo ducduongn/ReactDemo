@@ -1,22 +1,16 @@
 {
   "tasks": [
     {
-      "id": 1,
-      "text": "Machine Learning Report",
-      "day": "May 21st at 8:00am",
-      "reminder": false
-    },
-    {
-      "id": 4,
-      "text": "ESB for Quoc An",
-      "day": "May 17th at 8:00am",
-      "reminder": true
-    },
-    {
-      "text": "Đọc lại Report ML và Học",
-      "day": "Tuesday 25th May at 8:00am",
+      "text": "sefsef",
+      "day": "sefsef",
       "reminder": true,
-      "id": 5
+      "id": 1
+    },
+    {
+      "text": "werwe",
+      "day": "we",
+      "reminder": true,
+      "id": 2
     }
   ]
 }

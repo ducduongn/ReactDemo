@@ -1,24 +1,27 @@
 import PropTypes from 'prop-types'
 import Button from './Button'
-import {useLocation, userLocation} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
+import SearchBar from '../ultiity/SearchBar'
 
-const Header = ({title, onAdd, showAdd}) => {
+const Header = ({title, onAdd, showAdd, search}) => {
     const location = useLocation()
 
     return (
         <header>
             <h1 >{title}</h1>
-            {location.pathname === '/' && <Button 
+            {/* {location.pathname === '/' && <Button 
                 color={showAdd ? 'red' : 'green'} 
                 text={showAdd ? 'Close' : 'Add'}
                 onClick = {onAdd}
-            ></Button>}
+            ></Button>} */}
+
+            <SearchBar search={search} />
         </header>
     )
 }
 
 Header.defaultProps = {
-    title: 'UET JCIA', 
+    title: 'Voice Recognition Tool', 
 }
 
 Header.prototype = {

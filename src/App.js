@@ -1,98 +1,186 @@
 import React, {useState, useEffect}  from 'react'
 import {BrowserRouter as Router, Route} from 'react-router-dom'
-import Header from './components/Header'
-import Tasks from './components/Tasks'
-import AddTask from './components/AddTask'
-import Footer from './components/Footer'
-import About from './components/About'
+import Header from './components/basic/Header'
+import Tasks from './components/task/Tasks'
+import AddTask from './components/task/AddTask'
+import Footer from './components/basic/Footer'
+import About from './components/basic/About'
+import Gallery from './components/gallery/Gallery'
+import LoadMore from './components/ultiity/LoadMore'
 
-
+import Recorder from './components/ultiity/Recorder'
 
 const App = () => {
+
+  const [record, setRecord] = useState(false)
+
   const [showAddTask, setShowAddTask] = useState(false)
   const [tasks, setTasks] = useState([])
+  const [gallery, setGallery] = useState([])
+  const [globalSearchValue, setglobalSearchValue] = useState('')
+  const [pagenum, setPageNum] = useState(1)
 
+  const API_KEY = '563492ad6f9170000100000157cd64981c4a49f19968cd2bd6f49291'
 
-useEffect(() => {
-  const getTasks = async () => {
-    const tasksFromServer = await fetchTasks()
-    setTasks(tasksFromServer)
+  useEffect(() => {
+    const getTasks = async () => {
+
+      const tasksFromServer = await fetchTasks()
+      // console.log(tasksFromServer)
+      setTasks(tasksFromServer)
+    }
+
+    getTasks()
+  }, [])
+
+  //Record
+  const startRecording  = async() => {
+    setRecord(true)
   }
 
-  getTasks()
-}, [])
+  const stopRecording  = async() => {
+    setRecord(false)
+  }
 
+  const onData = async(recordedBlob) => {
+    console.log('chunk of real-time data is: ', recordedBlob);
+  }
 
-//Fetch Tasks
-const fetchTasks = async () => {
-  const res = await fetch("http://localhost:5000/tasks")
-  const data = await res.json()
+  const onStop = async(recordedBlob) => {
+    console.log('recordedBlob is: ', recordedBlob);
+  }
 
+  //Fetch Tasks
+  const fetchTasks = async () => {
+    const res = await fetch("http://localhost:5000/tasks")
+    const data = await res.json()
+
+    return data
+  }
+
+  //Fetch Task
+  const fetchTask = async (id) => {
+    const res = await fetch(`http://localhost:5000/tasks/${id}`)
+    const data = await res.json()
+
+    return data
+  }
+
+  //Add task
+  const addTask = async (task) => {
+    const res = await fetch(`http://localhost:5000/tasks`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(task)
+    })
+    const data = await res.json()
+
+    setTasks([...tasks, data])
+  }
+
+  //Delete task
+  const deleteTask = async(id) => {
+    await fetch(`http://localhost:5000/tasks/${id}` , {
+      method: 'DELETE'
+    })
+    
+    setTasks(tasks.filter((task) => task.id !== id))
+  }
+    
+  //Toggle reminder
+  const toggleReminder = async(id) => {
+
+    const taskToToggle = await fetchTask(id)
+    const updateTask = { ...taskToToggle, 
+    reminder: !taskToToggle.reminder}
+
+    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(updateTask),
+    })
+
+    const data = await res.json()
+
+    setTasks(tasks.map((task) => task.id === id
+    ? {...task, reminder: data.reminder} : task))
+  }
+
+  //Set show add task
+  const showAddTaskBtn = () => setShowAddTask(!showAddTask)
+
+  //Search
+  const search = async(input) => {
+
+    setglobalSearchValue(input.label)
+
+    setPageNum(1)
+
+    setGallery([])
+
+    const items = await fetchItemsBySearch(input.label)
+    
+    setGallery(items)
+  }
+
+  const searchMore = async() => {
+      setPageNum(pagenum + 1)
+      const items = await fetchMoreItemsBySearch(pagenum)
+      setGallery([...gallery, ...items])
+  }
+
+  //Get images
+  const fetchImages = async (baseURL) => {
+    const res = await fetch(baseURL, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: API_KEY
+      }
+    })
+    const data = await res.json()
+    
+    return data.photos
+  }
+
+  //Fetch items
+  const fetchItems = async () => {
+    const index = 1
+    const baseURL = `https://api.pexels.com/v1/curated?page=${index}&per_page=15`;
+    const data = await fetchImages(baseURL);
+
+    return data
+}
+
+const fetchItemsBySearch= async(label) => {
+  const BASEURL = `https://api.pexels.com/v1/search?query=${label}&page=1&per_page=15`
+  const data = await fetchImages(BASEURL)
+  console.log(data)
   return data
 }
 
-//Fetch Tasks
-const fetchTask = async (id) => {
-  const res = await fetch(`http://localhost:5000/tasks/${id}`)
-  const data = await res.json()
-
+const fetchMoreItemsBySearch = async(index) => {
+  // console.log(index)
+  const BASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=${index}&per_page=15`
+  const NBASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=2&per_page=15`
+  const data = await fetchImages(NBASEURL)
+  console.log(globalSearchValue)
   return data
 }
-
-//Add task
-const addTask = async (task) => {
-  const res = await fetch(`http://localhost:5000/tasks`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(task)
-  })
-  const data = await res.json()
-
-  setTasks([...tasks, data])
-}
-
-//Delete task
-const deleteTask = async(id) => {
-  await fetch(`http://localhost:5000/tasks/${id}` , {
-    method: 'DELETE'
-  })
-  
-  setTasks(tasks.filter((task) => task.id !== id))
-}
-  
-//Toggle reminder
-const toggleReminder = async(id) => {
-
-  const taskToToggle = await fetchTask(id)
-  const updateTask = { ...taskToToggle, 
-  reminder: !taskToToggle.reminder}
-
-  const res = await fetch(`http://localhost:5000/tasks/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(updateTask),
-  })
-
-  const data = await res.json()
-
-  setTasks(tasks.map((task) => task.id === id
-  ? {...task, reminder: data.reminder} : task))
-}
-
-//Set show add task
-const showAddTaskBtn = () => setShowAddTask(!showAddTask)
-
 
   return (
     <Router>
       <div className='container'>
-      <Header onAdd={showAddTaskBtn}
-              showAdd={showAddTask} />
-      <Route path='/' exact render={(prop) => (
+      <Header 
+        onAdd={() => setShowAddTask(!showAddTask)}
+        showAdd={showAddTask}
+        search={search} />
+  
+      <Route path='/tasks' exact render={(prop) => (
         <>
           {showAddTask && <AddTask onAdd={addTask}/>}
       {tasks.length > 0 ? (
@@ -105,6 +193,30 @@ const showAddTaskBtn = () => setShowAddTask(!showAddTask)
       )}
         </>
       )}></Route>
+
+      <Route path='/' exact render={(prop) => (
+        <>
+          {
+            <Recorder 
+            record={record}
+            onStop={onStop}
+            startRecording={startRecording}
+            startRecording={startRecording}/>
+          }
+          {gallery.length > 0 ? (
+          <>
+            <Gallery items={gallery}/>
+            <LoadMore loadMore={searchMore}/>
+          </>
+        ) : (
+        "Nothing to show"
+        )}
+    
+        </>
+      )}>
+
+      </Route>
+      {/* <Route path='/gallery' component={Gallery}></Route> */}
       <Route path='/about' component={About}></Route>
       <Footer/>
     </div>

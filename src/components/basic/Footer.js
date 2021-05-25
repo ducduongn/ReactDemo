@@ -6,7 +6,7 @@ const Footer = () => {
     return (
         <footer>
             {location.pathname === '/' && <div>
-            <p>Copy right &copy; 2021</p>
+            <p>My Demo React Application &copy;May 2021</p>
             <Link to="/about">About</Link>
             </div>}
         </footer>
