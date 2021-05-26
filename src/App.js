@@ -10,6 +10,9 @@ import LoadMore from './components/ultiity/LoadMore'
 
 import Recorder from './components/ultiity/Recorder'
 
+import axios from 'axios'
+import Uploader from './components/ultiity/Uploader'
+
 const App = () => {
 
   const [record, setRecord] = useState(false)
@@ -127,6 +130,19 @@ const App = () => {
     setGallery(items)
   }
 
+  const searchFromFile = async(input) => {
+
+    setglobalSearchValue(input)
+
+    setPageNum(1)
+
+    setGallery([])
+
+    const items = await fetchItemsBySearch(input)
+    
+    setGallery(items)
+  }
+
   const searchMore = async() => {
       setPageNum(pagenum + 1)
       const items = await fetchMoreItemsBySearch(pagenum)
@@ -156,21 +172,48 @@ const App = () => {
     return data
 }
 
-const fetchItemsBySearch= async(label) => {
-  const BASEURL = `https://api.pexels.com/v1/search?query=${label}&page=1&per_page=15`
-  const data = await fetchImages(BASEURL)
-  console.log(data)
-  return data
-}
+  const fetchItemsBySearch= async(label) => {
+    const BASEURL = `https://api.pexels.com/v1/search?query=${label}&page=1&per_page=15`
+    const data = await fetchImages(BASEURL)
+    console.log(data)
+    return data
+  }
 
-const fetchMoreItemsBySearch = async(index) => {
-  // console.log(index)
-  const BASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=${index}&per_page=15`
-  const NBASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=2&per_page=15`
-  const data = await fetchImages(NBASEURL)
-  console.log(globalSearchValue)
-  return data
-}
+  const fetchMoreItemsBySearch = async(index) => {
+    // console.log(index)
+    const BASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=${index}&per_page=15`
+    const NBASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=2&per_page=15`
+    const data = await fetchImages(NBASEURL)
+    console.log(globalSearchValue)
+    return data
+  }
+
+  const onFileUpload = async(selectedFiles) => {
+    
+    // Create an object of formData
+    const formData = new FormData();
+  
+    // Update the formData object
+    formData.append(
+      "file",
+      selectedFiles[0]
+    );
+  
+    // Request made to the backend api
+    // Send formData object
+    axios
+      .post("http://127.0.0.1:8000/recognize", formData)
+      .then(function(response) {
+         console.log(response.data.class_name)
+         searchFromFile(response.data.class_name)
+      })
+      .catch(function(error) {
+        console.log(error);
+        console.log('ERROR HERE')
+      });
+
+  };
+
 
   return (
     <Router>
@@ -196,13 +239,18 @@ const fetchMoreItemsBySearch = async(index) => {
 
       <Route path='/' exact render={(prop) => (
         <>
-          {
+          {/* {
             <Recorder 
             record={record}
             onStop={onStop}
             startRecording={startRecording}
             startRecording={startRecording}/>
-          }
+          } */}
+
+          {<>
+            <Uploader onFileUpload={onFileUpload} />
+          </>}
+
           {gallery.length > 0 ? (
           <>
             <Gallery items={gallery}/>

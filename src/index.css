@@ -88,6 +88,48 @@ input::placeholder{
   font-family: 'Montserrat';
 }
 
+.uploader {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.uploader input, button {
+  display: inline-block;
+  background: rgb(0, 0, 0);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+ /* .uploader input {
+  width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+} */
+
+/*.uploader input + label {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  cursor: pointer;
+} */
+
+/* .uploader input:focus + label,
+.uploader .input + label:hover {
+    background-color: red;
+} */
+
 
 /* Gallery */
 .gallery{
@@ -247,3 +289,4 @@ footer {
   margin-top: 30px;
   text-align: center;
 }
+
