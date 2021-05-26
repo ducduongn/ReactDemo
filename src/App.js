@@ -144,9 +144,12 @@ const App = () => {
   }
 
   const searchMore = async() => {
-      setPageNum(pagenum + 1)
-      const items = await fetchMoreItemsBySearch(pagenum)
+      let index = pagenum + 1
+      console.log(index)
+      const items = await fetchMoreItemsBySearch(index)
       setGallery([...gallery, ...items])
+      setPageNum(index)
+
   }
 
   //Get images
@@ -203,7 +206,7 @@ const App = () => {
     axios
       .post("http://127.0.0.1:8000/recognize", formData)
       .then(function(response) {
-         console.log(response.data.class_name)
+        //  console.log(response.data.class_name)
          searchFromFile(response.data.class_name)
       })
       .catch(function(error) {

@@ -1,5 +1,5 @@
 const Item = ({item}) => {
-    console.log(item)
+    // console.log(item)
     return (
         <div className='item'>
             <a href={item.src.original}>
