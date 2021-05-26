@@ -182,8 +182,7 @@ const App = () => {
   const fetchMoreItemsBySearch = async(index) => {
     // console.log(index)
     const BASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=${index}&per_page=15`
-    const NBASEURL = `https://api.pexels.com/v1/search?query=${globalSearchValue}&page=2&per_page=15`
-    const data = await fetchImages(NBASEURL)
+    const data = await fetchImages(BASEURL)
     console.log(globalSearchValue)
     return data
   }
