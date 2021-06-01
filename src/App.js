@@ -19,8 +19,6 @@ import Uploader from './components/ultiity/Uploader'
 
 const App = () => {
 
-  const [record, setRecord] = useState(false)
-
   const [showAddTask, setShowAddTask] = useState(false)
   const [tasks, setTasks] = useState([])
   const [gallery, setGallery] = useState([])
@@ -44,7 +42,7 @@ const App = () => {
       setTasks(tasksFromServer)
     }
 
-    getTasks()
+    // getTasks()
   }, [])
 
 
@@ -60,9 +58,12 @@ const App = () => {
 
   //on stop 
   const onStop = async(mediaData) => {
-  
     setMediaData(mediaData)
-    console.log('onStop: audio data', mediaData)
+    var file = new File([mediaData.blob], "file");
+    // console.log('onStop: audio data', mediaData)
+    // console.log(file)
+    sendToBackEnd(file)
+    // setMediaData(null)
   }
 
 
@@ -203,8 +204,36 @@ const App = () => {
     return data
   }
 
+  const sendToBackEnd = async(file) => {
+    // Create an object of formData
+    
+    console.log(file)
+    const formData = new FormData();
+  
+    // Update the formData object
+    formData.append(
+      "file",
+      file
+    );
+  
+    // Request made to the backend api
+    // Send formData object
+    axios
+      .post("http://127.0.0.1:8000/recognize", formData)
+      .then(function(response) {
+         console.log(response.data.class_name)
+         searchFromFile(response.data.class_name)
+      })
+      .catch(function(error) {
+        console.log(error);
+        console.log('ERROR HERE')
+      });
+
+  };
+  
   const onFileUpload = async(selectedFiles) => {
-    console.log(selectedFiles)
+    // console.log(selectedFiles[0])
+
     // Create an object of formData
     const formData = new FormData();
   

@@ -3,7 +3,7 @@ import AudioReactRecorder from 'audio-react-recorder'
 const VoiceRecorder = ({recordState, onStop, start, stop, mediaData}) => {
     return (
         <div className="recorder">
-          <h3>Step 1: Record a word</h3>
+          <h3>Option 1: Record a word</h3>
           <AudioReactRecorder state={recordState} onStop={onStop} />
           <audio
             id='audio'
