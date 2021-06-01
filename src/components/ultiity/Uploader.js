@@ -19,6 +19,7 @@ const Uploader = ({onFileUpload}) => {
 
     return (
         <div className='uploader'>
+            <h3>Step 2: Upload your file</h3>
             <input type="file" onChange={onChange} />
             <button  onClick={onClick}>Upload</button>
         </div>

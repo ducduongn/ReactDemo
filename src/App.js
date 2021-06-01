@@ -1,5 +1,8 @@
 import React, {useState, useEffect}  from 'react'
 import {BrowserRouter as Router, Route} from 'react-router-dom'
+
+import { RecordState } from 'audio-react-recorder'
+
 import Header from './components/basic/Header'
 import Tasks from './components/task/Tasks'
 import AddTask from './components/task/AddTask'
@@ -8,7 +11,8 @@ import About from './components/basic/About'
 import Gallery from './components/gallery/Gallery'
 import LoadMore from './components/ultiity/LoadMore'
 
-import Recorder from './components/ultiity/Recorder'
+
+import VoiceRecorder from './components/ultiity/VoiceRecorder'
 
 import axios from 'axios'
 import Uploader from './components/ultiity/Uploader'
@@ -23,6 +27,13 @@ const App = () => {
   const [globalSearchValue, setglobalSearchValue] = useState('')
   const [pagenum, setPageNum] = useState(1)
 
+  const [recording, setRecording] = useState(false)
+  const [audios, setAudios] = useState([])
+
+  //Record constructor
+  const [recordState, setRecordState] = useState(null)
+  const [mediaData, setMediaData] = useState(null)
+  
   const API_KEY = '563492ad6f9170000100000157cd64981c4a49f19968cd2bd6f49291'
 
   useEffect(() => {
@@ -36,22 +47,24 @@ const App = () => {
     getTasks()
   }, [])
 
-  //Record
-  const startRecording  = async() => {
-    setRecord(true)
+
+  //Start Recording
+  const start = async() => {
+    setRecordState(RecordState.START)
   }
 
-  const stopRecording  = async() => {
-    setRecord(false)
+  // Stop Recording
+  const stop = async(audioData) => {
+    setRecordState(RecordState.STOP)
   }
 
-  const onData = async(recordedBlob) => {
-    console.log('chunk of real-time data is: ', recordedBlob);
+  //on stop 
+  const onStop = async(mediaData) => {
+  
+    setMediaData(mediaData)
+    console.log('onStop: audio data', mediaData)
   }
 
-  const onStop = async(recordedBlob) => {
-    console.log('recordedBlob is: ', recordedBlob);
-  }
 
   //Fetch Tasks
   const fetchTasks = async () => {
@@ -191,7 +204,7 @@ const App = () => {
   }
 
   const onFileUpload = async(selectedFiles) => {
-    
+    console.log(selectedFiles)
     // Create an object of formData
     const formData = new FormData();
   
@@ -206,7 +219,7 @@ const App = () => {
     axios
       .post("http://127.0.0.1:8000/recognize", formData)
       .then(function(response) {
-        //  console.log(response.data.class_name)
+         console.log(response.data.class_name)
          searchFromFile(response.data.class_name)
       })
       .catch(function(error) {
@@ -241,13 +254,14 @@ const App = () => {
 
       <Route path='/' exact render={(prop) => (
         <>
-          {/* {
-            <Recorder 
-            record={record}
+          {
+            <VoiceRecorder
+            recordState={recordState}
             onStop={onStop}
-            startRecording={startRecording}
-            startRecording={startRecording}/>
-          } */}
+            start={start}
+            stop={stop}
+            mediaData={mediaData} />
+          }
 
           {<>
             <Uploader onFileUpload={onFileUpload} />

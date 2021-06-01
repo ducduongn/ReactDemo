@@ -130,8 +130,16 @@ input::placeholder{
     background-color: red;
 } */
 
+.recorder {
+  margin: 60px 60px;
+}
+
+.uploader {
+  margin-bottom: 50px;
+}
 
 /* Gallery */
+
 .gallery{
   width: 100%;
   display: grid;
