@@ -15,7 +15,6 @@ const Header = ({title, onAdd, showAdd, search}) => {
                 onClick = {onAdd}
             ></Button>} */}
 
-            <SearchBar search={search} />
         </header>
     )
 }

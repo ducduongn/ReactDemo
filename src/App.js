@@ -10,7 +10,8 @@ import Footer from './components/basic/Footer'
 import About from './components/basic/About'
 import Gallery from './components/gallery/Gallery'
 import LoadMore from './components/ultiity/LoadMore'
-
+import Result from './components/ultiity/Result'
+import Option from './components/ultiity/Option'
 
 import VoiceRecorder from './components/ultiity/VoiceRecorder'
 
@@ -25,12 +26,15 @@ const App = () => {
   const [globalSearchValue, setglobalSearchValue] = useState('')
   const [pagenum, setPageNum] = useState(1)
 
-  const [recording, setRecording] = useState(false)
-  const [audios, setAudios] = useState([])
-
   //Record constructor
   const [recordState, setRecordState] = useState(null)
   const [mediaData, setMediaData] = useState(null)
+
+  //Result and score
+  const [class_name, setClassName] = useState("")
+  const [option1, setOption1] = useState(false)
+  const [option2, setOption2] = useState(false)
+  const [isPredicted, setIsPredicted] = useState(false)
   
   const API_KEY = '563492ad6f9170000100000157cd64981c4a49f19968cd2bd6f49291'
 
@@ -45,6 +49,12 @@ const App = () => {
     // getTasks()
   }, [])
 
+
+  const reset = async() => {
+    setGallery([])
+    setIsPredicted(false)
+    setClassName("")
+  }
 
   //Start Recording
   const start = async() => {
@@ -63,7 +73,6 @@ const App = () => {
     // console.log('onStop: audio data', mediaData)
     // console.log(file)
     sendToBackEnd(file)
-    // setMediaData(null)
   }
 
 
@@ -155,6 +164,7 @@ const App = () => {
     const items = await fetchItemsBySearch(input)
     
     setGallery(items)
+    setIsPredicted(true)
   }
 
   const searchMore = async() => {
@@ -223,6 +233,7 @@ const App = () => {
       .then(function(response) {
          console.log(response.data.class_name)
          searchFromFile(response.data.class_name)
+         setClassName(response.data.class_name)
       })
       .catch(function(error) {
         console.log(error);
@@ -250,6 +261,7 @@ const App = () => {
       .then(function(response) {
          console.log(response.data.class_name)
          searchFromFile(response.data.class_name)
+         setClassName(response.data.class_name)
       })
       .catch(function(error) {
         console.log(error);
@@ -257,7 +269,6 @@ const App = () => {
       });
 
   };
-
 
   return (
     <Router>
@@ -281,20 +292,41 @@ const App = () => {
         </>
       )}></Route>
 
+      <Option option1={option1} 
+      setOption1={setOption1}
+      option2={option2}
+      setOption2={setOption2}
+      setIsPredicted={setIsPredicted}
+      setGallery={setGallery}/>
+
       <Route path='/' exact render={(prop) => (
         <>
           {
-            <VoiceRecorder
-            recordState={recordState}
-            onStop={onStop}
-            start={start}
-            stop={stop}
-            mediaData={mediaData} />
+            option1 ? (
+              <VoiceRecorder
+              recordState={recordState}
+              onStop={onStop}
+              start={start}
+              stop={stop}
+              mediaData={mediaData} />
+            ) : (
+              <></>
+            )
           }
 
-          {<>
+          { option2 ? (
             <Uploader onFileUpload={onFileUpload} />
-          </>}
+          ) : (
+            <></>
+          )}
+
+          {
+            isPredicted ? (
+              <Result class_name={class_name} />
+            ) : (
+              <></>
+            )
+          }
 
           {gallery.length > 0 ? (
           <>
