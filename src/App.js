@@ -200,7 +200,10 @@ const App = () => {
 }
 
   const fetchItemsBySearch= async(label) => {
-    const BASEURL = `https://api.pexels.com/v1/search?query=${label}&page=1&per_page=15`
+    var index = Math.floor(Math.random()* 50)
+    setPageNum(index)
+    console.log(index)
+    const BASEURL = `https://api.pexels.com/v1/search?query=${label}&page=${index}&per_page=15`
     const data = await fetchImages(BASEURL)
     console.log(data)
     return data
@@ -292,15 +295,18 @@ const App = () => {
         </>
       )}></Route>
 
-      <Option option1={option1} 
-      setOption1={setOption1}
-      option2={option2}
-      setOption2={setOption2}
-      setIsPredicted={setIsPredicted}
-      setGallery={setGallery}/>
 
       <Route path='/' exact render={(prop) => (
         <>
+          {
+            <Option option1={option1} 
+            setOption1={setOption1}
+            option2={option2}
+            setOption2={setOption2}
+            setIsPredicted={setIsPredicted}
+            setGallery={setGallery}/>
+          }
+
           {
             option1 ? (
               <VoiceRecorder

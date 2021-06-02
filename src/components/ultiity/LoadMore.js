@@ -1,3 +1,5 @@
+import Button from '../basic/Button'
+
 const LoadMore = ({loadMore}) => {
     const onClick = async(e) => {
         e.preventDefault()
@@ -5,7 +7,9 @@ const LoadMore = ({loadMore}) => {
     }
 
     return (
-        <a className="load-more" onClick={onClick}>Load More</a>
+       <div>
+           <button className="load-more" onClick={onClick}>Load more</button>
+       </div>
     )
 }
 

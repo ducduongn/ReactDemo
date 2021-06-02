@@ -5,12 +5,14 @@ const Result = ({class_name}) => {
         <div className="result">
             <h3> Result </h3>
             <table>
-                <tr>
-                    <th>Class name</th>
-                </tr>
-                <tr>
-                    <td>{class_name}</td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <th>Class name</th>
+                    </tr>
+                    <tr>
+                        <td>{class_name}</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     )
